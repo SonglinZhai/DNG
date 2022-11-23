@@ -1,0 +1,122 @@
+{
+    "name": "Songlin_Taxonomy_Expansion",
+
+    "mag_cs":{
+        "data_dir": "../data/MAG-CS/",
+        "name": "computer_science",
+        "existing_partition": false,
+        "validation_split": 0.1,
+        "normalize_embed": true
+    },
+
+    "wordnet_verb":{
+        "data_dir": "./data/",
+        "name": "wordnet_verb",
+        "existing_partition": false,
+        "added_root": "verb",
+        "validation_split": 0.1,
+        "normalize_embed": true
+    },
+
+    "data_loader": {
+        "train_args":{
+            "batch_size": 4,
+            "shuffle": true,
+            "num_workers": 2
+        },
+        "valid_args":{
+            "batch_size": 1,
+            "shuffle": false,
+            "num_workers": 20
+        },
+        "test_args":{
+            "batch_size": 1,
+            "shuffle": false,
+            "num_workers": 20
+        }
+    },
+
+    "arch": {
+        "type": "ANG",
+        "ang_args": {
+            "num_vocab": 29654,
+            "in_dim": 250,
+            "hidden_dim": 512,
+            "out_dim": 512
+        },
+        "lote_args":{
+            "in_dim": 250, 
+            "hidden_dim": 512,
+            "out_dim": 512,
+            "num_layers": 2,
+            "heads": [4, 1],
+            "feat_drop": 0.1, 
+            "attn_drop": 0.1
+        }
+    },
+
+    "loss": "kl_diversity",
+    "metrics": [ "precision@1", "precision@5", "precision@10",
+                 "recall@1", "recall@5", "recall@10",
+                 "mr", "mrr"
+            ],
+
+    "lr_scheduler": {
+        "type": "StepLR",
+        "args": {
+            "step_size": 50,
+            "gamma": 0.1
+        }
+    },
+
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.001,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+
+    "trainer": {
+        "gpu_ids": [],
+        "epochs": 100,
+        "save_dir": "saved/",
+        "verbosity": 2,
+        "early_stop": 10,
+        "tensorboard": true,
+        "monitor": "off"
+    },
+
+    "log": {
+        "version": 1, 
+        "disable_existing_loggers": false, 
+        "formatters": {
+            "simple": {"format": "%(message)s"}, 
+            "datetime": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
+        }, 
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler", 
+                "level": "DEBUG", 
+                "formatter": "simple", 
+                "stream": "ext://sys.stdout"
+                }, 
+            "info_file_handler": {
+                "class": "logging.handlers.RotatingFileHandler", 
+                "level": "INFO", 
+                "formatter": "datetime", 
+                "filename": "info.log", 
+                "maxBytes": 10485760, 
+                "backupCount": 20, "encoding": "utf8"
+            }
+        }, 
+        "root": {
+            "level": "INFO", 
+            "handlers": [
+                "console", 
+                "info_file_handler"
+            ]
+        }
+    }
+}
